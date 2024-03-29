@@ -1,6 +1,7 @@
 package com.laioffer.airbnb.controller;
 
 import com.laioffer.airbnb.exception.UserAlreadyExistException;
+import com.laioffer.airbnb.exception.UserNotExistException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -13,5 +14,10 @@ public class CustomExceptionHandler {
     @ExceptionHandler(UserAlreadyExistException.class)
     public final ResponseEntity<String> handleUserAlreadyExistExceptions(Exception ex, WebRequest request) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(UserNotExistException.class)
+    public final ResponseEntity<String> handleUserNotExistException(Exception ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.UNAUTHORIZED);
     }
 }
