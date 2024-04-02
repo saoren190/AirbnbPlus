@@ -3,9 +3,10 @@ package com.laioffer.airbnb.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
 @Table(name = "user")
@@ -19,8 +20,7 @@ public class User {
     @JsonIgnore
     private boolean enabled;
 
-    public User() {
-    }
+    public User() {}
 
     private User(Builder builder) {
         this.username = builder.username;
@@ -85,3 +85,4 @@ public class User {
         }
     }
 }
+

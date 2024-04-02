@@ -4,7 +4,6 @@ import com.laioffer.airbnb.model.Token;
 import com.laioffer.airbnb.model.User;
 import com.laioffer.airbnb.model.UserRole;
 import com.laioffer.airbnb.service.AuthenticationService;
-import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;

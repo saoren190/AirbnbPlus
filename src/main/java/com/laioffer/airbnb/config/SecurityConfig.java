@@ -1,51 +1,86 @@
 package com.laioffer.airbnb.config;
 
+import com.laioffer.airbnb.filter.JwtFilter;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
 
 import javax.sql.DataSource;
 
-@Configuration
+
 @EnableWebSecurity
-public class SecurityConfig {
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+
     private final DataSource dataSource;
+    private final JwtFilter jwtFilter;
+
+
+    public SecurityConfig(DataSource dataSource, JwtFilter jwtFilter) {
+        this.dataSource = dataSource;
+        this.jwtFilter = jwtFilter;
+    }
+
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
-    public SecurityConfig(DataSource dataSource) {this.dataSource = dataSource;}
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-                .authorizeHttpRequests((authorize) -> authorize
-                        .requestMatchers(HttpMethod.POST, "/register/*").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/authenticate/*").permitAll()
-                        .anyRequest().authenticated()
-                )
-                .csrf(AbstractHttpConfigurer::disable);
 
-        return http.build();
+
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        http
+                .authorizeRequests()
+                .antMatchers(HttpMethod.POST, "/register/*").permitAll()
+                .antMatchers(HttpMethod.POST, "/authenticate/*").permitAll()
+                .antMatchers("/stays").hasAuthority("ROLE_HOST")
+                .antMatchers("/stays/*").hasAuthority("ROLE_HOST")
+                .antMatchers("/search").hasAuthority("ROLE_GUEST")
+                .antMatchers("/reservations").hasAuthority("ROLE_GUEST")
+                .antMatchers("/reservations/*").hasAuthority("ROLE_GUEST")
+                .anyRequest().authenticated()
+                .and()
+                .csrf()
+                .disable()
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
     }
-    public void filterChain(AuthenticationManagerBuilder auth) throws Exception {
+
+
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.jdbcAuthentication().dataSource(dataSource)
                 .passwordEncoder(passwordEncoder())
                 .usersByUsernameQuery("SELECT username, password, enabled FROM user WHERE username = ?")
-                .authoritiesByUsernameQuery("SELECT username, authority FROM authority WHERE username = ?");
-    }
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
-        return authenticationConfiguration.getAuthenticationManager();
+                .authoritiesByUsernameQuery("SELECT username, authority FROM authority WHERE username = ?")
+        ;
     }
 
+
+    @Override
+    @Bean
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
+    }
 }
+
+
+
+
+
+
+
+
 

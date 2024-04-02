@@ -20,6 +20,6 @@ public class RegisterController {
     }
     @PostMapping("/register/host")
     public void addHost(@RequestBody User user) {
-        registerService.add(user, UserRole.ROLE_GUEST);
+        registerService.add(user, UserRole.ROLE_HOST);
     }
 }
