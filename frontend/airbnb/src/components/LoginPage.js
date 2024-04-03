@@ -11,30 +11,24 @@ class LoginPage extends React.Component {
     loading: false,
   };
 
-
   onFinish = () => {
     console.log("finish form");
   };
 
-
-  handleLogin = async () => {
+  handleLogin = async() => {
     const formInstance = this.formRef.current;
-
-
     try {
       await formInstance.validateFields();
     } catch (error) {
       return;
     }
 
-
     this.setState({
       loading: true,
     });
 
-
     try {
-      const { asHost } = this.state;
+      const {asHost} = this.state;
       const resp = await login(formInstance.getFieldsValue(true), asHost);
       this.props.handleLoginSuccess(resp.token, asHost);
     } catch (error) {
@@ -46,27 +40,22 @@ class LoginPage extends React.Component {
     }
   };
 
-
-  handleRegister = async () => {
+  handleRegister = async() => {
     const formInstance = this.formRef.current;
-
 
     try {
       await formInstance.validateFields();
     } catch (error) {
       return;
     }
-
-
     this.setState({
       loading: true,
     });
 
-
     try {
       await register(formInstance.getFieldsValue(true), this.state.asHost);
       message.success("Register Successfully");
-    } catch (error) {
+    } catch(error) {
       message.error(error.message);
     } finally {
       this.setState({
@@ -75,14 +64,11 @@ class LoginPage extends React.Component {
     }
   };
 
-
   handleCheckboxOnChange = (e) => {
     this.setState({
       asHost: e.target.checked,
     });
   };
-
-
   render() {
     return (
       <div style={{ width: 500, margin: "20px auto" }}>
@@ -146,6 +132,4 @@ class LoginPage extends React.Component {
     );
   }
 }
-
-
 export default LoginPage;
