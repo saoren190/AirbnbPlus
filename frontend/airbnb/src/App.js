@@ -3,8 +3,9 @@ import { UserOutlined } from "@ant-design/icons";
 import React from "react";
 import LoginPage from "./components/LoginPage";
 import HostHomePage from "./components/HostHomePage";
+import GuestHomePage from "./components/GuestHomePage";
 
-const {Header, Content} = Layout;
+const { Header, Content } = Layout;
 
 class App extends React.Component {
   state = {
@@ -28,7 +29,7 @@ class App extends React.Component {
       authed: true,
       asHost,
     });
-  }
+  };
 
   handleLogOut = () => {
     localStorage.removeItem("authToken");
@@ -40,13 +41,14 @@ class App extends React.Component {
 
   renderContent = () => {
     if (!this.state.authed) {
-      return <LoginPage handleLoginSuccess={this.handleLoginSuccess}/>
+      return <LoginPage handleLoginSuccess={this.handleLoginSuccess} />;
     }
 
     if (this.state.asHost) {
-      return <HostHomePage/>
+      return <HostHomePage />;
     }
-    return <div>guest</div>
+
+    return <GuestHomePage />;
   };
 
   userMenu = (
@@ -62,11 +64,11 @@ class App extends React.Component {
       <Layout style={{ height: "100vh" }}>
         <Header style={{ display: "flex", justifyContent: "space-between" }}>
           <div style={{ fontSize: 16, fontWeight: 600, color: "white" }}>
-            Airbnb+
+            Stays Booking
           </div>
           {this.state.authed && (
             <div>
-              <Dropdown trigger="click" menu={this.userMenu}>
+              <Dropdown trigger="click" overlay={this.userMenu}>
                 <Button icon={<UserOutlined />} shape="circle" />
               </Dropdown>
             </div>
@@ -81,6 +83,5 @@ class App extends React.Component {
     );
   }
 }
-
 
 export default App;
